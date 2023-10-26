@@ -1,11 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "me.brisson.stock.core.local_storage"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 24
@@ -25,11 +27,16 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle)
     implementation(libs.kotlinx.coroutines.android)
 
     // Local Storage
     implementation(libs.androidx.room.runtine)
     annotationProcessor(libs.androidx.room.compiler)
+
+    // DI
+    implementation(libs.dagger.hilt)
+    ksp(libs.dagger.hilt.compiler)
 
     // Test dependencies
     testImplementation(libs.junit)
