@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:data"))
+    implementation(project(":core:design-system"))
 
     // Core
     implementation(libs.androidx.core.ktx)
