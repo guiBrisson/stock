@@ -4,6 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import me.brisson.stock.core.data.repository.ProductRepository
+import me.brisson.stock.core.data.repository.ProductRepositoryImpl
 import me.brisson.stock.core.data.repository.StockItemRepository
 import me.brisson.stock.core.data.repository.StockItemRepositoryImpl
 import me.brisson.stock.core.data.repository.StockMovementRepository
@@ -22,5 +24,10 @@ interface DataModule {
     fun bindsStockItemRepository(
         stockItemRepositoryImpl: StockItemRepositoryImpl,
     ): StockItemRepository
+
+    @Binds
+    fun bindsProductRepository(
+        productRepositoryImpl: ProductRepositoryImpl,
+    ): ProductRepository
 
 }

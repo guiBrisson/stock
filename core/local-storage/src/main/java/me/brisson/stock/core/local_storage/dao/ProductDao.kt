@@ -23,5 +23,5 @@ interface ProductDao {
     suspend fun insertAll(vararg product: ProductEntity)
 
     @Delete
-    suspend fun delete(product: ProductEntity)
+    suspend fun delete(product: ProductEntity): Int
 }
