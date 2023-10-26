@@ -6,13 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "me.brisson.stock.core.local_storage"
+    namespace = "me.brisson.stock.core.data"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 24
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -26,20 +24,17 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle)
-    implementation(libs.kotlinx.coroutines.android)
+    implementation(project(":core:model"))
+    implementation(project(":core:local-storage"))
 
-    // Local Storage
-    implementation(libs.androidx.room.runtine)
-    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.coroutines.android)
 
     // DI
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
 
-    // Test dependencies
+    // Test
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 @Entity(tableName = "stock_movement")
-data class StockMovement(
+data class StockMovementEntity(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "product_id") val productId: Int,
     @ColumnInfo(name = "stock_item_batch") val stockItemBatch: String,
