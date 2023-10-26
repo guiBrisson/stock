@@ -1,4 +1,4 @@
-package me.brisson.stock.ui.theme
+package me.brisson.stock.core.design_system.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
