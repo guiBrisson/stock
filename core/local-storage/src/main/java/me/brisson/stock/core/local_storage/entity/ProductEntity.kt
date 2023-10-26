@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 
-@Entity
-data class Product(
+@Entity(tableName = "product")
+data class ProductEntity(
     @PrimaryKey val id: Int,
     val name: String,
     @ColumnInfo(name = "measure_unit") val measureUnit: String,

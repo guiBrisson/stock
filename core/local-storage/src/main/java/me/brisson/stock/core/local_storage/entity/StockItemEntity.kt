@@ -7,7 +7,7 @@ import java.util.Date
 
 
 @Entity(tableName = "stock_item")
-data class StockItem(
+data class StockItemEntity(
     @PrimaryKey(autoGenerate = true) val batch: String,
     @ColumnInfo(name = "product_id") val productId: Int,
     @ColumnInfo(name = "entry_date") val entryDate: Date,
