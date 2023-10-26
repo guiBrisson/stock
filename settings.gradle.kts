@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Stock"
 include(":app")
+include(":core:local-storage")
