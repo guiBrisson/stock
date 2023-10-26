@@ -13,15 +13,15 @@ interface ProductDao {
     @Query("SELECT * FROM product")
     fun getAll(): Flow<List<Product>>
 
-    @Query("SELECT * FROM product WHERE id IN (:productIds)")
-    fun loadAllByIds(productIds: IntArray): Flow<List<Product>>
+    @Query("SELECT * FROM product WHERE id LIKE :productId")
+    fun loadById(productId: Int): Flow<Product?>
 
     @Query("SELECT * FROM product WHERE name LIKE :name")
     fun findByName(name: String): Flow<List<Product>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg product: Product)
+    suspend fun insertAll(vararg product: Product)
 
     @Delete
-    fun delete(product: Product)
+    suspend fun delete(product: Product)
 }

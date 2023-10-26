@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
 
-//Todo: add stock and movements
+
 @Entity
 data class Product(
     @PrimaryKey val id: Int,
