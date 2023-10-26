@@ -2,7 +2,6 @@ package me.brisson.stock.core.local_storage.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,8 +16,17 @@ import javax.inject.Singleton
 object DatabaseModule {
 
     @Provides
+    fun providesProductDao(appDatabase: AppDatabase) = appDatabase.productDao()
+
+    @Provides
+    fun providesStockItemDao(appDatabase: AppDatabase) = appDatabase.stockItemDao()
+
+    @Provides
+    fun providesStockMovementDao(appDatabase: AppDatabase) = appDatabase.stockMovementDao()
+
+    @Provides
     @Singleton
-    fun providesAppDatabase(@ApplicationContext context: Context): RoomDatabase {
+    fun providesAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "app-database")
             .addTypeConverter(DateConverter::class)
             .build()
