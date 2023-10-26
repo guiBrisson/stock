@@ -21,4 +21,7 @@ interface StockItemDao {
 
     @Delete
     suspend fun delete(stockItem: StockItemEntity)
+
+    @Query("DELETE FROM stock_item WHERE batch = :stockItemBatch")
+    suspend fun delete(stockItemBatch: String): Int
 }
