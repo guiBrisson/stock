@@ -8,7 +8,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import me.brisson.stock.core.local_storage.util.AppDatabase
-import me.brisson.stock.core.local_storage.util.DateConverter
 import javax.inject.Singleton
 
 @Module
@@ -28,7 +27,6 @@ object DatabaseModule {
     @Singleton
     fun providesAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "app-database")
-            .addTypeConverter(DateConverter::class)
             .build()
     }
 }

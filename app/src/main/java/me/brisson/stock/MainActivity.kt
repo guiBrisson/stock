@@ -9,9 +9,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
+import dagger.hilt.android.AndroidEntryPoint
 import me.brisson.stock.core.design_system.theme.StockTheme
 import me.brisson.stock.navigation.StockNavHost
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

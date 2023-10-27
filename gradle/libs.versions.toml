@@ -9,7 +9,6 @@ androidxComposeBom = "2023.03.00"
 coil = "2.4.0"
 hilt = "2.47"
 androidxHiltNavigationCompose = "1.0.0"
-ksp = "1.9.0-1.0.11"
 retrofit = "2.9.0"
 room = "2.4.1"
 okhttp = "4.10.0"
@@ -28,6 +27,7 @@ jetbrainsKotlinAndroidPlugin = "1.8.10"
 appcompat = "1.6.1"
 material = "1.9.0"
 org-jetbrains-kotlin-jvm = "1.9.0"
+ksp = "1.9.10-1.0.13"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
@@ -42,9 +42,10 @@ androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graph
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room"}
 androidx-room-runtine = { group = "androidx.room", name = "room-runtime", version.ref = "room"}
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room"}
-androidx-room-pagin = { group = "androidx.room", name = "room-pagin", version.ref = "room"}
+androidx-room-paging = { group = "androidx.room", name = "room-pagin", version.ref = "room"}
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
