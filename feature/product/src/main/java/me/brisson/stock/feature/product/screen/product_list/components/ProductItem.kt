@@ -1,6 +1,8 @@
 package me.brisson.stock.feature.product.screen.product_list.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import me.brisson.stock.core.design_system.components.EmptyStockTag
 import me.brisson.stock.core.design_system.theme.StockTheme
 import me.brisson.stock.core.model.MeasurementUnit
 import me.brisson.stock.core.model.Product
@@ -31,13 +34,17 @@ fun ProductItem(
         modifier = modifier.clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = product.name,
-            style = MaterialTheme.typography.headlineMedium,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
-        )
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            if (total == 0) EmptyStockTag()
+
+            Text(
+                modifier = Modifier,
+                text = product.name,
+                style = MaterialTheme.typography.headlineMedium,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+            )
+        }
 
         Text(
             text = "Total: ",
@@ -50,7 +57,7 @@ fun ProductItem(
             text = "$total ${product.measurementUnit.abbreviation}",
             style = MaterialTheme.typography.labelSmall,
         )
-        
+
         Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = null)
     }
 }
@@ -70,7 +77,7 @@ private fun PreviewProductItem() {
             ProductItem(
                 modifier = Modifier.fillMaxWidth(),
                 product = product,
-                total = 20,
+                total = 0,
                 onClick = { },
             )
         }
