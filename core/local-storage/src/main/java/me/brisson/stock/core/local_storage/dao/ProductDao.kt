@@ -20,7 +20,7 @@ interface ProductDao {
     fun findByName(name: String): Flow<List<ProductEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg product: ProductEntity)
+    suspend fun insertAll(vararg product: ProductEntity): List<Long>
 
     @Delete
     suspend fun delete(product: ProductEntity): Int

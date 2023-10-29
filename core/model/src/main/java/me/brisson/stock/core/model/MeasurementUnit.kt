@@ -11,4 +11,13 @@ enum class MeasurementUnit(val baseUnitName: String, val abbreviation: String,) 
             return enumValues<MeasurementUnit>().find { it.baseUnitName == value } ?: UNKNOWN
         }
     }
+
+    fun sampleName(): String {
+        return when(this) {
+            MASS -> "Peso (${this.abbreviation})"
+            VOLUME -> "Volume (${this.abbreviation})"
+            UNIT -> "Unidade (${this.abbreviation})"
+            UNKNOWN -> ""
+        }
+    }
 }

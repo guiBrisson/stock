@@ -27,6 +27,7 @@ fun NavGraphBuilder.productScreen(
 
     composable(route = newProductRoute) {
         NewProductRoute(
+            onShowSnackbar = onShowSnackbar,
             onBack = { navController.navigateUp() },
         )
     }
