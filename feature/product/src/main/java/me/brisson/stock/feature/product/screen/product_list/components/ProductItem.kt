@@ -27,7 +27,6 @@ import me.brisson.stock.core.model.Product
 fun ProductItem(
     modifier: Modifier = Modifier,
     product: Product,
-    total: Int,
     onClick: () -> Unit,
 ) {
     Row(
@@ -35,7 +34,7 @@ fun ProductItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            if (total == 0) EmptyStockTag()
+            if (product.total == 0) EmptyStockTag()
 
             Text(
                 modifier = Modifier,
@@ -54,7 +53,7 @@ fun ProductItem(
 
         Text(
             modifier = Modifier.padding(end = 8.dp),
-            text = "$total ${product.measurementUnit.abbreviation}",
+            text = "${product.total} ${product.measurementUnit.abbreviation}",
             style = MaterialTheme.typography.labelSmall,
         )
 
@@ -68,7 +67,7 @@ private fun PreviewProductItem() {
     val product = Product(
         name = "Pêssego em caldas",
         measurementUnit = MeasurementUnit.UNIT,
-        expirationDate = null,
+        expirationDay = null,
         observation = null,
     )
 
@@ -77,7 +76,6 @@ private fun PreviewProductItem() {
             ProductItem(
                 modifier = Modifier.fillMaxWidth(),
                 product = product,
-                total = 0,
                 onClick = { },
             )
         }

@@ -76,7 +76,8 @@ internal fun NewProductScreen(
 
     var name by rememberSaveable { mutableStateOf("") }
     var measurementUnit by rememberSaveable { mutableStateOf(MeasurementUnit.UNKNOWN) }
-    var expiring by rememberSaveable { mutableStateOf("") }
+    var expiringDays by rememberSaveable { mutableStateOf(0) }
+    var expiringLabel by rememberSaveable { mutableStateOf("") }
     var observation by rememberSaveable { mutableStateOf("") }
 
     val isButtonEnabled: Boolean =
@@ -168,7 +169,7 @@ internal fun NewProductScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                value = expiring,
+                value = expiringLabel,
                 onValueChange = { },
                 hintText = "3 meses",
                 enabled = false,
@@ -180,7 +181,10 @@ internal fun NewProductScreen(
 
             ExpiringDateDropdown(
                 expanded = showExpiringDropdown,
-                onSelect = { expiring = it },
+                onSelect = { days, label ->
+                    expiringDays = days
+                    expiringLabel = label
+                },
                 onDismissRequest = { showExpiringDropdown = false },
                 offset = IntOffset(y = 130, x = 0)
             )
@@ -212,7 +216,7 @@ internal fun NewProductScreen(
                 val product = Product(
                     name = name,
                     measurementUnit = measurementUnit,
-                    expirationDate = null, // Todo: make it right
+                    expirationDay = null,
                     observation = observation,
                 )
 
@@ -258,7 +262,7 @@ fun ExpiringDateDropdown(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     offset: IntOffset = IntOffset(0, 0),
-    onSelect: (String) -> Unit,
+    onSelect: (days: Int, label: String) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     MyDropdown(
@@ -272,7 +276,11 @@ fun ExpiringDateDropdown(
                 text = {
                     Text(text = months)
                 },
-                onClick = { onSelect(months); onDismissRequest() },
+                onClick = {
+                    val days = months[0].digitToInt() * 30
+                    onSelect(days, months)
+                    onDismissRequest()
+                },
             )
         }
     }

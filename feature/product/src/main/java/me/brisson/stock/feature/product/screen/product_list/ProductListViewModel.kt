@@ -33,7 +33,7 @@ class ProductListViewModel @Inject constructor(
             val product = Product(
                 name = "Teste",
                 measurementUnit = MeasurementUnit.UNIT,
-                expirationDate = null,
+                expirationDay = null,
                 observation = null,
             )
 
