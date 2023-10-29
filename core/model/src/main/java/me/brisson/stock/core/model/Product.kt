@@ -1,24 +1,25 @@
 package me.brisson.stock.core.model
 
-import java.util.Date
 
 data class Product(
     val id: Int,
     val name: String,
     val measurementUnit: MeasurementUnit,
-    val expirationDate: Date?,
+    val expirationDay: Int?,
     val observation: String?,
+    val total: Int,
 ) {
     constructor(
         name: String,
         measurementUnit: MeasurementUnit,
-        expirationDate: Date?,
+        expirationDay: Int?,
         observation: String?
-    ): this(
+    ) : this(
         id = 0,
         name = name,
         measurementUnit = measurementUnit,
-        expirationDate = expirationDate,
+        expirationDay = expirationDay,
         observation = observation,
+        total = 0,
     )
 }

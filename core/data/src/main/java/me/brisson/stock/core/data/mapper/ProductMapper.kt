@@ -8,8 +8,9 @@ fun Product.asEntity() = ProductEntity(
     id = id,
     name = name,
     measureUnit = measurementUnit.baseUnitName,
-    expirationDateNotification = expirationDate,
+    expirationDayNotification = expirationDay,
     observation = observation,
+    total = total,
 )
 
 fun List<ProductEntity>.asModel() = this.map { it.asModel() }
@@ -18,6 +19,7 @@ fun ProductEntity.asModel() = Product(
     id = id,
     name = name,
     measurementUnit = MeasurementUnit.fromString(measureUnit),
-    expirationDate = expirationDateNotification,
+    expirationDay = expirationDayNotification,
     observation = observation,
+    total = total,
 )

@@ -106,8 +106,7 @@ internal fun ProductListScreen(
                             items(uiState.productList) { product ->
                                 ProductItem(
                                     modifier = Modifier.fillMaxWidth(),
-                                    product,
-                                    total = 0,
+                                    product = product,
                                     onClick = { onProduct(product) },
                                 )
                             }
