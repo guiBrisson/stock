@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import me.brisson.stock.feature.product.navigation.productRoute
+import me.brisson.stock.feature.product.navigation.productsRoute
 import me.brisson.stock.feature.product.navigation.productScreen
 
 @Composable
@@ -13,14 +13,14 @@ fun StockNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     onShowSnackbar: suspend (String, String?) -> Boolean,
-    startDestination: String = productRoute,
+    startDestination: String = productsRoute,
 ) {
     NavHost(
         modifier = modifier,
         navController = navController,
         startDestination = startDestination,
     ) {
-        productScreen()
+        productScreen(navController, onShowSnackbar)
     }
 
 }

@@ -39,6 +39,7 @@ import me.brisson.stock.feature.product.screen.product_list.components.ProductLi
 fun ProductListRoute(
     modifier: Modifier = Modifier,
     viewModel: ProductListViewModel = hiltViewModel(),
+    onNewProduct: () -> Unit,
 ) {
     val productListUiState by viewModel.productListUiState.collectAsStateWithLifecycle()
 
@@ -47,7 +48,7 @@ fun ProductListRoute(
             .fillMaxSize()
             .padding(horizontal = 20.dp),
         productListUiState = productListUiState,
-        onNewProduct = { viewModel.addNewProduct() }, //Todo: navigate to new product activity
+        onNewProduct = onNewProduct,
         onProduct = { /*TODO*/ },
     )
 }
