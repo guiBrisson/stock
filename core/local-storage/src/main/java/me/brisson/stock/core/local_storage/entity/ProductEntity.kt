@@ -8,7 +8,7 @@ import java.util.Date
 
 @Entity(tableName = "product")
 data class ProductEntity(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int,
     val name: String,
     @ColumnInfo(name = "measure_unit") val measureUnit: String,
     @ColumnInfo(name = "exp_date_notification") val expirationDateNotification: Date?,

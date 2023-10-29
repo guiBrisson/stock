@@ -8,4 +8,17 @@ data class Product(
     val measurementUnit: MeasurementUnit,
     val expirationDate: Date?,
     val observation: String?,
-)
+) {
+    constructor(
+        name: String,
+        measurementUnit: MeasurementUnit,
+        expirationDate: Date?,
+        observation: String?
+    ): this(
+        id = 0,
+        name = name,
+        measurementUnit = measurementUnit,
+        expirationDate = expirationDate,
+        observation = observation,
+    )
+}

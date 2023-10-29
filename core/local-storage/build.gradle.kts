@@ -32,7 +32,8 @@ dependencies {
 
     // Local Storage
     implementation(libs.androidx.room.runtine)
-    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     // DI
     implementation(libs.dagger.hilt)

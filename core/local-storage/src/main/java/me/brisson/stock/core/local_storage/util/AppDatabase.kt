@@ -10,7 +10,10 @@ import me.brisson.stock.core.local_storage.entity.ProductEntity
 import me.brisson.stock.core.local_storage.entity.StockItemEntity
 import me.brisson.stock.core.local_storage.entity.StockMovementEntity
 
-@Database(entities = [ProductEntity::class, StockItemEntity::class, StockMovementEntity::class], version = 1)
+@Database(
+    entities = [ProductEntity::class, StockItemEntity::class, StockMovementEntity::class],
+    version = 1
+)
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao

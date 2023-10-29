@@ -23,8 +23,8 @@ class ProductRepositoryImpl @Inject constructor(
         return productDao.findByName(name).map { it.asModel() }
     }
 
-    override suspend fun add(product: Product) {
-        productDao.insertAll(product.asEntity())
+    override suspend fun add(product: Product): Boolean {
+        return productDao.insertAll(product.asEntity()).isNotEmpty()
     }
 
     override suspend fun delete(product: Product): Boolean {
