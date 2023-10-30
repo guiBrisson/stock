@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
@@ -48,6 +49,7 @@ import me.brisson.stock.core.model.StockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.MovementsButtons
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTab
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetails
+import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductTabs
 import java.util.Date
 
@@ -161,8 +163,15 @@ internal fun ProductDetailScreen(
 
                         when (selectedTab) {
                             ProductDetailTab.STOCK -> {
-                                items(productDetailUiState.stockItems) { stockItem ->
-                                    Text(text = stockItem.batch)
+                                itemsIndexed(productDetailUiState.stockItems) { i, stockItem ->
+                                    ProductStockItem(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                                        index = i + 1,
+                                        item = stockItem,
+                                        measurementUnit = productDetailUiState.product.measurementUnit,
+                                    )
                                 }
                             }
 
