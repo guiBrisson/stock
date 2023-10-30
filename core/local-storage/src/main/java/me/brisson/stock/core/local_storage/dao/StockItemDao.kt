@@ -13,15 +13,15 @@ interface StockItemDao {
     @Query("SELECT * FROM stock_item WHERE product_id = :productId")
     fun loadStockItemFromProductId(productId: Int): Flow<List<StockItemEntity>>
 
-    @Query("SELECT * FROM stock_item WHERE batch = :stockItemBatch")
-    fun loadStockItemByBatch(stockItemBatch: String): Flow<StockItemEntity>
+    @Query("SELECT * FROM stock_item WHERE id = :stockItemId")
+    fun loadStockItemById(stockItemId: Int): Flow<StockItemEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg stockItem: StockItemEntity)
+    suspend fun insertAll(vararg stockItem: StockItemEntity): List<Long>
 
     @Delete
     suspend fun delete(stockItem: StockItemEntity)
 
-    @Query("DELETE FROM stock_item WHERE batch = :stockItemBatch")
-    suspend fun delete(stockItemBatch: String): Int
+    @Query("DELETE FROM stock_item WHERE id = :stockItemId")
+    suspend fun delete(stockItemId: Int): Int
 }

@@ -5,7 +5,7 @@ import me.brisson.stock.core.model.StockItem
 
 interface StockItemRepository {
     fun loadFromProductId(productId: Int): Flow<List<StockItem>>
-    fun loadByBatch(batch: String): Flow<StockItem>
-    suspend fun add(stockItem: StockItem)
-    suspend fun delete(batch: String): Boolean
+    fun loadById(stockItemId: Int): Flow<StockItem>
+    suspend fun add(stockItem: StockItem): Boolean
+    suspend fun delete(stockItemId: Int): Boolean
 }

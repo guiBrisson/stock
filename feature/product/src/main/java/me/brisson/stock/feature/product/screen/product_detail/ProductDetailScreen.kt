@@ -1,8 +1,6 @@
 package me.brisson.stock.feature.product.screen.product_detail
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,25 +9,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,12 +40,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.brisson.stock.core.design_system.components.MyDropdown
 import me.brisson.stock.core.design_system.theme.StockTheme
-import me.brisson.stock.core.design_system.theme.green600
-import me.brisson.stock.core.design_system.theme.neutral200
-import me.brisson.stock.core.design_system.theme.neutral600
-import me.brisson.stock.core.design_system.theme.red700
 import me.brisson.stock.core.model.MeasurementUnit
 import me.brisson.stock.core.model.Product
+import me.brisson.stock.core.model.StockItem
+import me.brisson.stock.feature.product.screen.product_detail.components.MovementsButtons
+import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetails
+import java.util.Date
 
 @Composable
 fun ProductDetailRoute(
@@ -58,16 +53,22 @@ fun ProductDetailRoute(
     viewModel: ProductDetailViewModel = hiltViewModel(),
     onBack: () -> Unit,
 ) {
-    val product by viewModel.product.collectAsStateWithLifecycle()
+    val productDetailUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    ProductDetailScreen(modifier = modifier.fillMaxSize(), product = product, onBack = onBack)
+    ProductDetailScreen(
+        modifier = modifier.fillMaxSize(),
+        productDetailUiState = productDetailUiState,
+        onNewEntry = viewModel::newStockItem,
+        onBack = onBack,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProductDetailScreen(
     modifier: Modifier = Modifier,
-    product: Product?,
+    productDetailUiState: ProductDetailUiState,
+    onNewEntry: (StockItem) -> Unit,
     onBack: () -> Unit,
 ) {
     Scaffold(
@@ -90,7 +91,7 @@ internal fun ProductDetailScreen(
                     }
                 }
 
-                ProductDetailMoreOptions(
+                MoreOptionsDropdown(
                     expanded = showMoreOptionsDropdown,
                     onDismissRequest = { showMoreOptionsDropdown = false },
                     onEdit = { /*TODO*/ },
@@ -105,55 +106,53 @@ internal fun ProductDetailScreen(
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                product?.let { product ->
-                    item {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            product.observation?.let {
-                                Icon(
-                                    imageVector = Icons.Default.Info,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
+
+                when (productDetailUiState) {
+                    is ProductDetailUiState.Success -> {
+                        item {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 20.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                productDetailUiState.product.observation?.let {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
+                                    )
+                                }
+
+                                Text(
+                                    text = productDetailUiState.product.name,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             }
+                        }
 
-                            Text(
-                                text = product.name,
-                                style = MaterialTheme.typography.titleLarge,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
+                        item {
+                            ProductDetails(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp, horizontal = 20.dp),
+                                productDetailUiState = productDetailUiState,
                             )
+                        }
+
+                        items(productDetailUiState.stockItems) { stockItem ->
+                            Text(text = stockItem.batch)
                         }
                     }
 
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp, horizontal = 20.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Top,
-                        ) {
-                            DetailItem(
-                                title = "Próximo vencimento",
-                                value = "12/2023",
-                            )
-
-                            DetailItem(
-                                title = "Preço médio",
-                                value = "R\$ 13,50",
-                            )
-
-                            DetailItem(
-                                title = "Medida",
-                                value = product.measurementUnit.sampleName(),
-                            )
-                        }
+                    is ProductDetailUiState.Error -> TODO()
+                    ProductDetailUiState.Loading -> {
+                        item { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
                     }
                 }
+
+
             }
 
             MovementsButtons(
@@ -162,7 +161,24 @@ internal fun ProductDetailScreen(
                     .background(MaterialTheme.colorScheme.background)
                     .padding(horizontal = 20.dp, vertical = 8.dp),
                 onWriteOff = { /*TODO*/ },
-                onNewEntry = { /*TODO*/ },
+                onNewEntry = {
+                    when (productDetailUiState) {
+                        is ProductDetailUiState.Success -> {
+                            val item = StockItem(
+                                batch = "123123",
+                                productId = productDetailUiState.product.id,
+                                entryDate = Date(),
+                                price = 14f,
+                                expirationDate = Date(),
+                                quantity = 10,
+                            )
+
+                            onNewEntry(item)
+                        }
+
+                        else -> Unit
+                    }
+                },
             )
 
         }
@@ -171,32 +187,7 @@ internal fun ProductDetailScreen(
 }
 
 @Composable
-private fun DetailItem(
-    modifier: Modifier = Modifier,
-    title: String,
-    value: String?,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-        )
-
-        Text(
-            text = value ?: "-",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-    }
-}
-
-@Composable
-private fun ProductDetailMoreOptions(
+private fun MoreOptionsDropdown(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     onDismissRequest: () -> Unit,
@@ -215,59 +206,6 @@ private fun ProductDetailMoreOptions(
     }
 }
 
-@Composable
-private fun MovementsButtons(
-    modifier: Modifier = Modifier,
-    onWriteOff: () -> Unit,
-    onNewEntry: () -> Unit,
-) {
-    val borderColor = if (isSystemInDarkTheme()) neutral600 else neutral200
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        TextButton(
-            modifier = Modifier.weight(1f),
-            onClick = onWriteOff,
-            shape = RoundedCornerShape(4.dp),
-            border = BorderStroke(1.dp, borderColor),
-            colors = ButtonDefaults.textButtonColors(
-                contentColor = MaterialTheme.colorScheme.onBackground,
-            ),
-        ) {
-            Icon(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(20.dp),
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                tint = red700,
-            )
-            Text("Dar baixa", style = MaterialTheme.typography.labelSmall)
-        }
-        TextButton(
-            modifier = Modifier.weight(1f),
-            onClick = onNewEntry,
-            shape = RoundedCornerShape(4.dp),
-            border = BorderStroke(1.dp, borderColor),
-            colors = ButtonDefaults.textButtonColors(
-                contentColor = MaterialTheme.colorScheme.onBackground,
-            ),
-        ) {
-            Icon(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(20.dp),
-                imageVector = Icons.Default.ArrowForward,
-                contentDescription = null,
-                tint = green600,
-            )
-            Text("Nova entrada", style = MaterialTheme.typography.labelSmall)
-        }
-    }
-}
-
 @Preview
 @Composable
 private fun PreviewProductDetailScreen() {
@@ -280,7 +218,12 @@ private fun PreviewProductDetailScreen() {
                 observation = "this is an observation!",
             )
 
-            ProductDetailScreen(modifier = Modifier.fillMaxSize(), product = product, onBack = { })
+            ProductDetailScreen(
+                modifier = Modifier.fillMaxSize(),
+                productDetailUiState = ProductDetailUiState.Loading,
+                onNewEntry = { },
+                onBack = { },
+            )
         }
     }
 }

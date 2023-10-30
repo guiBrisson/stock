@@ -17,26 +17,19 @@ class StockItemRepositoryImpl @Inject constructor(
         return stockItemDao.loadStockItemFromProductId(productId).map { it.asModel() }
     }
 
-    override fun loadByBatch(batch: String): Flow<StockItem> {
-        return stockItemDao.loadStockItemByBatch(batch).map { it.asModel() }
+    override fun loadById(stockItemId: Int): Flow<StockItem> {
+        return stockItemDao.loadStockItemById(stockItemId).map { it.asModel() }
     }
 
-    override suspend fun add(stockItem: StockItem) {
-        // Increase the product total amount
-        updateProductTotalAmount(stockItem.productId, stockItem.quantity)
-
-        stockItemDao.insertAll(stockItem.asEntity())
+    override suspend fun add(stockItem: StockItem): Boolean {
+        return stockItemDao.insertAll(stockItem.asEntity()).isNotEmpty()
     }
 
-    override suspend fun delete(batch: String): Boolean {
-        // Decrease the product total amount
-        loadByBatch(batch).collect { stockItem ->
-            updateProductTotalAmount(stockItem.productId, -stockItem.quantity)
-        }
-
-        return stockItemDao.delete(batch) == 1
+    override suspend fun delete(stockItemId: Int): Boolean {
+        return stockItemDao.delete(stockItemId) == 1
     }
 
+    // Todo: Adjust product total amount
     private suspend fun updateProductTotalAmount(productId: Int, amount: Int) {
         productDao.loadById(productId).collect { productEntity ->
             val currentProductAmount = productEntity?.total ?: 0

@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.brisson.stock.core.data.repository.ProductRepository
-import me.brisson.stock.core.model.MeasurementUnit
 import me.brisson.stock.core.model.Product
 import javax.inject.Inject
 
@@ -27,19 +26,6 @@ class ProductListViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ProductListUiState.Loading
         )
-
-    fun addNewProduct() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val product = Product(
-                name = "Teste",
-                measurementUnit = MeasurementUnit.UNIT,
-                expirationDay = null,
-                observation = null,
-            )
-
-            productRepository.add(product)
-        }
-    }
 
     fun deleteProduct(product: Product) {
         viewModelScope.launch(Dispatchers.IO) {
