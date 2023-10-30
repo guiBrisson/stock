@@ -26,14 +26,15 @@ fun MyDropdown(
     expanded: Boolean,
     strokeColor: Color = if (isSystemInDarkTheme()) neutral600 else neutral200,
     shape: Shape = RoundedCornerShape(4.dp),
+    alignment: Alignment = Alignment.TopCenter,
     offset: IntOffset = IntOffset(0, 0),
     onDismissRequest: () -> Unit,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     if (expanded) {
         Popup(
             onDismissRequest = onDismissRequest,
-            alignment = Alignment.TopCenter,
+            alignment = alignment,
             offset = offset,
         ) {
             Column(

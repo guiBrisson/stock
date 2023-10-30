@@ -40,6 +40,7 @@ fun ProductListRoute(
     modifier: Modifier = Modifier,
     viewModel: ProductListViewModel = hiltViewModel(),
     onNewProduct: () -> Unit,
+    onProduct: (id: Int) -> Unit,
 ) {
     val productListUiState by viewModel.productListUiState.collectAsStateWithLifecycle()
 
@@ -49,7 +50,7 @@ fun ProductListRoute(
             .padding(horizontal = 20.dp),
         productListUiState = productListUiState,
         onNewProduct = onNewProduct,
-        onProduct = { /*TODO*/ },
+        onProduct = { onProduct(it.id) },
     )
 }
 
