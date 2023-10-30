@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +46,9 @@ import me.brisson.stock.core.model.MeasurementUnit
 import me.brisson.stock.core.model.Product
 import me.brisson.stock.core.model.StockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.MovementsButtons
+import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTab
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetails
+import me.brisson.stock.feature.product.screen.product_detail.components.ProductTabs
 import java.util.Date
 
 @Composable
@@ -71,6 +75,8 @@ internal fun ProductDetailScreen(
     onNewEntry: (StockItem) -> Unit,
     onBack: () -> Unit,
 ) {
+    var selectedTab: ProductDetailTab by rememberSaveable { mutableStateOf(ProductDetailTab.STOCK) }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -141,12 +147,40 @@ internal fun ProductDetailScreen(
                             )
                         }
 
-                        items(productDetailUiState.stockItems) { stockItem ->
-                            Text(text = stockItem.batch)
+                        item {
+                            ProductTabs(
+                                modifier = Modifier
+                                    .padding(top = 32.dp)
+                                    .height(40.dp)
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp),
+                                selectedTab = selectedTab,
+                                onTabSelected = { selectedTab = it },
+                            )
+                        }
+
+                        when (selectedTab) {
+                            ProductDetailTab.STOCK -> {
+                                items(productDetailUiState.stockItems) { stockItem ->
+                                    Text(text = stockItem.batch)
+                                }
+                            }
+
+                            ProductDetailTab.MOVEMENT -> {
+                                items(productDetailUiState.stockMovements) { movements ->
+                                    Text(text = movements.itemBatch)
+                                }
+                            }
+                        }
+
+                    }
+
+                    is ProductDetailUiState.Error -> {
+                        item {
+                            Text(text = productDetailUiState.error.message ?: "vixii")
                         }
                     }
 
-                    is ProductDetailUiState.Error -> TODO()
                     ProductDetailUiState.Loading -> {
                         item { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
                     }
@@ -168,7 +202,7 @@ internal fun ProductDetailScreen(
                                 batch = "123123",
                                 productId = productDetailUiState.product.id,
                                 entryDate = Date(),
-                                price = 14f,
+                                price = 17f,
                                 expirationDate = Date(),
                                 quantity = 10,
                             )
