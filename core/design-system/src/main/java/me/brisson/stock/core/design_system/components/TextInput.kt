@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +41,8 @@ fun TextInput(
     hintText: String? = null,
     enabled: Boolean = true,
     singleLine: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -46,6 +50,7 @@ fun TextInput(
     shape: Shape = RoundedCornerShape(4.dp),
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground),
     trayContent: (@Composable () -> Unit)? = null,
+    leadingContent: (@Composable () -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -60,6 +65,8 @@ fun TextInput(
         onValueChange = onValueChange,
         enabled = enabled,
         singleLine = singleLine,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         maxLines = maxLines,
         minLines = minLines,
         visualTransformation = visualTransformation,
@@ -81,9 +88,11 @@ fun TextInput(
                     .fillMaxSize()
                     .border(width = borderWidth, color = borderColor, shape = shape)
                     .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Box {
+                leadingContent?.let { it() }
+
+                Box(modifier = Modifier.weight(1f)) {
                     if (value.isEmpty() && !hintText.isNullOrEmpty()) {
                         Text(
                             text = hintText,

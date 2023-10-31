@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +39,7 @@ import me.brisson.stock.core.design_system.theme.StockTheme
 import me.brisson.stock.core.model.Product
 import me.brisson.stock.core.model.StockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.MovementsButtons
+import me.brisson.stock.feature.product.screen.product_detail.components.NewEntryBottomSheet
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTab
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTopBar
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetails
@@ -48,7 +48,6 @@ import me.brisson.stock.feature.product.screen.product_detail.components.Product
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductTabs
 import me.brisson.stock.feature.product.util.makeList
-import java.util.Date
 
 @Composable
 fun ProductDetailRoute(
@@ -66,7 +65,7 @@ fun ProductDetailRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ProductDetailScreen(
     modifier: Modifier = Modifier,
@@ -75,9 +74,12 @@ internal fun ProductDetailScreen(
     onBack: () -> Unit,
 ) {
     val scrollState = rememberLazyListState()
-    val titleVisible by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 } }
 
     var selectedTab: ProductDetailTab by rememberSaveable { mutableStateOf(ProductDetailTab.STOCK) }
+
+    val titleVisible by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 } }
+    var showNewEntryBottomSheet by remember { mutableStateOf(false) }
+    var showWriteOffBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -189,7 +191,6 @@ internal fun ProductDetailScreen(
                                 }
                             }
                         }
-
                     }
 
                     is ProductDetailUiState.Error -> {
@@ -202,35 +203,31 @@ internal fun ProductDetailScreen(
                         item { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
                     }
                 }
-
-
             }
 
-            MovementsButtons(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
-                onWriteOff = { /*TODO*/ },
-                onNewEntry = {
-                    when (productDetailUiState) {
-                        is ProductDetailUiState.Success -> {
-                            val item = StockItem(
-                                batch = "123123",
-                                productId = productDetailUiState.product.id,
-                                entryDate = Date(),
-                                price = 17f,
-                                expirationDate = Date(),
-                                quantity = 10,
-                            )
+            when (productDetailUiState) {
+                is ProductDetailUiState.Success -> {
+                    NewEntryBottomSheet(
+                        show = showNewEntryBottomSheet,
+                        productId = productDetailUiState.product.id,
+                        measurementUnit = productDetailUiState.product.measurementUnit,
+                        onDismissRequest = { showNewEntryBottomSheet = false },
+                        onConclude = { onNewEntry(it); showNewEntryBottomSheet = false },
+                    )
 
-                            onNewEntry(item)
-                        }
+                    MovementsButtons(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
+                        onWriteOff = { showWriteOffBottomSheet = true },
+                        onNewEntry = { showNewEntryBottomSheet = true }
+                    )
+                }
 
-                        else -> Unit
-                    }
-                },
-            )
+                else -> Unit
+            }
+
 
         }
     }
