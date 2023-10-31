@@ -6,8 +6,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.brisson.stock.core.design_system.theme.StockTheme
@@ -28,10 +30,19 @@ fun ProductStockItem(
     val dateFormat = SimpleDateFormat("MM/yyyy", locale)
     val formattedDate = dateFormat.format(item.expirationDate)
 
-    Row(modifier = modifier) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Text(modifier = Modifier.defaultMinSize(minWidth = 40.dp), text = index.toString())
-        Text(modifier = Modifier.weight(1f), text = item.batch, textAlign = TextAlign.Center)
+
+        Text(
+            modifier = Modifier.weight(1f),
+            text = item.batch,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+
         Text(modifier = Modifier.weight(1f), text = formattedDate, textAlign = TextAlign.Center)
+
         Text(
             modifier = Modifier.weight(1f),
             text = "${item.quantity} ${measurementUnit.abbreviation}",

@@ -3,6 +3,7 @@ package me.brisson.stock.core.design_system.theme
 import androidx.compose.ui.graphics.Color
 
 val green600 = Color(0xFF16A34A)
+val green500 = Color(0xFF11B621)
 
 val blue500 = Color(0xFF3B82F6)
 val blue100 = Color(0xFFE0F2FE)

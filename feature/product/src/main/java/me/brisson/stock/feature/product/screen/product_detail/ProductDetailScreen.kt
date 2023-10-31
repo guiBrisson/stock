@@ -49,6 +49,7 @@ import me.brisson.stock.core.model.StockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.MovementsButtons
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTab
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetails
+import me.brisson.stock.feature.product.screen.product_detail.components.ProductMovementItem
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductTabs
 import java.util.Date
@@ -176,8 +177,14 @@ internal fun ProductDetailScreen(
                             }
 
                             ProductDetailTab.MOVEMENT -> {
-                                items(productDetailUiState.stockMovements) { movements ->
-                                    Text(text = movements.itemBatch)
+                                items(productDetailUiState.stockMovements) { movement ->
+                                    ProductMovementItem(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                                        item = movement,
+                                        measurementUnit = productDetailUiState.product.measurementUnit,
+                                    )
                                 }
                             }
                         }

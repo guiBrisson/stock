@@ -8,5 +8,13 @@ data class StockMovement(
     val isEntry: Boolean,
     val isLoss: Boolean,
     val date: Date,
-    val quantity: Int
-)
+    val quantity: Int,
+) {
+    constructor(
+        itemBatch: String,
+        isEntry: Boolean,
+        isLoss: Boolean,
+        date: Date,
+        quantity: Int,
+    ): this(0, itemBatch, isEntry, isLoss, date, quantity)
+}

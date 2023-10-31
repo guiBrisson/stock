@@ -59,6 +59,16 @@ class ProductDetailViewModel @Inject constructor(
     fun newStockItem(item: StockItem) {
         viewModelScope.launch(Dispatchers.IO) {
             stockItemRepository.add(item)
+
+            val movement = StockMovement(
+                itemBatch = item.batch,
+                isEntry = true,
+                isLoss = false,
+                date = item.entryDate,
+                quantity = item.quantity,
+            )
+
+            movementRepository.add(productId = item.productId, stockMovement = movement)
         }
     }
 }
