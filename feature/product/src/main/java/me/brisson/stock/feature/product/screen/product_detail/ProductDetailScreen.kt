@@ -3,32 +3,27 @@ package me.brisson.stock.feature.product.screen.product_detail
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,17 +33,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import me.brisson.stock.core.design_system.components.MyDropdown
 import me.brisson.stock.core.design_system.theme.StockTheme
 import me.brisson.stock.core.model.MeasurementUnit
 import me.brisson.stock.core.model.Product
 import me.brisson.stock.core.model.StockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.MovementsButtons
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTab
+import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTopBar
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetails
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductMovementItem
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockHeader
@@ -80,42 +74,35 @@ internal fun ProductDetailScreen(
     onNewEntry: (StockItem) -> Unit,
     onBack: () -> Unit,
 ) {
+    val scrollState = rememberLazyListState()
+    val titleVisible by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 } }
+
     var selectedTab: ProductDetailTab by rememberSaveable { mutableStateOf(ProductDetailTab.STOCK) }
 
     Scaffold(
         modifier = modifier,
         topBar = {
-            Box {
-                var showMoreOptionsDropdown by remember { mutableStateOf(false) }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                    }
-
-                    IconButton(onClick = { showMoreOptionsDropdown = true }) {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
-                    }
-                }
-
-                MoreOptionsDropdown(
-                    expanded = showMoreOptionsDropdown,
-                    onDismissRequest = { showMoreOptionsDropdown = false },
-                    onEdit = { /*TODO*/ },
-                    onDelete = { /*TODO*/ },
-                )
+            val productName = when (productDetailUiState) {
+                is ProductDetailUiState.Success -> productDetailUiState.product.name
+                else -> ""
             }
+
+            ProductDetailTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                titleVisible = titleVisible,
+                productName = productName,
+                onBack = onBack,
+                onEdit = { /*TODO*/ },
+                onDelete = { /*TODO*/ },
+            )
         }
     ) { scaffoldPadding ->
         Column(modifier = Modifier.padding(scaffoldPadding)) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
+                state = scrollState,
             ) {
                 when (productDetailUiState) {
                     is ProductDetailUiState.Success -> {
@@ -246,27 +233,6 @@ internal fun ProductDetailScreen(
             )
 
         }
-    }
-
-}
-
-@Composable
-private fun MoreOptionsDropdown(
-    modifier: Modifier = Modifier,
-    expanded: Boolean,
-    onDismissRequest: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-) {
-    MyDropdown(
-        modifier = modifier.width(IntrinsicSize.Min),
-        alignment = Alignment.TopEnd,
-        expanded = expanded,
-        onDismissRequest = onDismissRequest,
-        offset = IntOffset(y = 150, x = 0),
-    ) {
-        DropdownMenuItem(text = { Text(text = "Editar") }, onClick = onEdit)
-        DropdownMenuItem(text = { Text(text = "Excluir") }, onClick = onDelete)
     }
 }
 
