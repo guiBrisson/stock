@@ -1,5 +1,6 @@
 package me.brisson.stock.feature.product.screen.product_detail
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,7 @@ import me.brisson.stock.feature.product.screen.product_detail.components.Movemen
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTab
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetails
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductMovementItem
+import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockHeader
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductTabs
 import java.util.Date
@@ -70,7 +72,7 @@ fun ProductDetailRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal fun ProductDetailScreen(
     modifier: Modifier = Modifier,
@@ -115,7 +117,6 @@ internal fun ProductDetailScreen(
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-
                 when (productDetailUiState) {
                     is ProductDetailUiState.Success -> {
                         item {
@@ -145,20 +146,33 @@ internal fun ProductDetailScreen(
                             ProductDetails(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 16.dp, horizontal = 20.dp),
+                                    .padding(
+                                        top = 16.dp,
+                                        start = 20.dp,
+                                        end = 20.dp,
+                                        bottom = 32.dp
+                                    ),
                                 productDetailUiState = productDetailUiState,
                             )
                         }
 
-                        item {
+                        stickyHeader {
                             ProductTabs(
                                 modifier = Modifier
-                                    .padding(top = 32.dp)
                                     .height(40.dp)
                                     .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.background)
                                     .padding(horizontal = 20.dp),
                                 selectedTab = selectedTab,
                                 onTabSelected = { selectedTab = it },
+                            )
+
+                            ProductStockHeader(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(start = 20.dp, end = 20.dp, top = 12.dp),
+                                tab = selectedTab,
                             )
                         }
 
@@ -209,7 +223,7 @@ internal fun ProductDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                    .padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
                 onWriteOff = { /*TODO*/ },
                 onNewEntry = {
                     when (productDetailUiState) {

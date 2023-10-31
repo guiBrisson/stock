@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import me.brisson.stock.core.design_system.theme.StockTheme
 import me.brisson.stock.core.model.MeasurementUnit
 import me.brisson.stock.core.model.StockItem
@@ -31,7 +30,7 @@ fun ProductStockItem(
     val formattedDate = dateFormat.format(item.expirationDate)
 
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Text(modifier = Modifier.defaultMinSize(minWidth = 40.dp), text = index.toString())
+        Text(modifier = Modifier.defaultMinSize(minWidth = HEADER_INDEX_SIZE), text = index.toString())
 
         Text(
             modifier = Modifier.weight(1f),

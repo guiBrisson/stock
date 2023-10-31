@@ -3,6 +3,7 @@ package me.brisson.stock.feature.product.screen.product_detail.components
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -49,7 +50,12 @@ fun ProductMovementItem(
     val iconColor = if (item.isEntry) entryColor else writeOffColor
 
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = icon, contentDescription = null, tint = iconColor)
+        Icon(
+            modifier = Modifier.size(HEADER_INDEX_SIZE),
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconColor,
+        )
 
         Text(
             modifier = Modifier.weight(1f),
