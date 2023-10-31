@@ -22,4 +22,14 @@ data class Product(
         observation = observation,
         total = 0,
     )
+
+    companion object {
+        fun mockForPreview() = Product(
+            name = "Arroz branco",
+            measurementUnit = MeasurementUnit.MASS,
+            expirationDay = 40,
+            observation = "ex. Guardar o arroz branco em garráfas pet seladas a vácuo."
+        )
+    }
 }
+

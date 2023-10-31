@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.brisson.stock.core.design_system.theme.StockTheme
-import me.brisson.stock.core.model.MeasurementUnit
 import me.brisson.stock.core.model.Product
 import me.brisson.stock.core.model.StockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.MovementsButtons
@@ -48,6 +47,7 @@ import me.brisson.stock.feature.product.screen.product_detail.components.Product
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockHeader
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductTabs
+import me.brisson.stock.feature.product.util.makeList
 import java.util.Date
 
 @Composable
@@ -241,16 +241,14 @@ internal fun ProductDetailScreen(
 private fun PreviewProductDetailScreen() {
     StockTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
-            val product = Product(
-                name = "Arroz branco",
-                measurementUnit = MeasurementUnit.MASS,
-                expirationDay = null,
-                observation = "this is an observation!",
+            val uiState = ProductDetailUiState.Success(
+                product = Product.mockForPreview(),
+                stockItems = makeList(StockItem.mockForPreview(), 10),
+                stockMovements = emptyList(),
             )
-
             ProductDetailScreen(
                 modifier = Modifier.fillMaxSize(),
-                productDetailUiState = ProductDetailUiState.Loading,
+                productDetailUiState = uiState,
                 onNewEntry = { },
                 onBack = { },
             )

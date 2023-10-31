@@ -19,4 +19,15 @@ data class StockItem(
         price: Float?,
         quantity: Int,
     ) : this(0, batch, productId, entryDate, expirationDate, price, quantity)
+
+    companion object {
+        fun mockForPreview() = StockItem(
+            batch = "LT123456",
+            productId = 1,
+            entryDate = Date(),
+            expirationDate = Date(),
+            price = 15f,
+            quantity = 12,
+        )
+    }
 }
