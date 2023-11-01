@@ -29,7 +29,8 @@ fun ProductDetails(
     numberFormat.maximumFractionDigits = 2
     numberFormat.currency = Currency.getInstance("BRL")
 
-    val formattedAveragePrice = if (itemsWithPrice.isEmpty()) "-" else numberFormat.format(priceAverage)
+    val formattedAveragePrice =
+        if (itemsWithPrice.isEmpty()) null else numberFormat.format(priceAverage)
 
     var closestDate: Date? = null
     productDetailUiState.stockItems.forEach { item ->
@@ -41,8 +42,11 @@ fun ProductDetails(
     }
     val locale: Locale = Locale.getDefault()
     val dateFormat = SimpleDateFormat("MM/yyyy", locale)
-    val formattedDate = if (closestDate == null) "-" else dateFormat.format(closestDate!!)
+    val formattedDate = if (closestDate == null) null else dateFormat.format(closestDate!!)
 
+    val productTotal = if (productDetailUiState.product.total > 0) {
+        "${productDetailUiState.product.total} " + productDetailUiState.product.measurementUnit.abbreviation
+    } else null
 
     Row(
         modifier = modifier,
@@ -50,18 +54,21 @@ fun ProductDetails(
         verticalAlignment = Alignment.Top,
     ) {
         DetailItem(
-            title = "Próximo vencimento",
+            modifier = Modifier.weight(1f),
+            title = "Próxima validade",
             value = formattedDate,
         )
 
         DetailItem(
+            modifier = Modifier.weight(1f),
             title = "Preço médio",
             value = formattedAveragePrice,
         )
 
         DetailItem(
-            title = "Medida",
-            value = productDetailUiState.product.measurementUnit.sampleName(),
+            modifier = Modifier.weight(1f),
+            title = "Quantidade total",
+            value = productTotal,
         )
     }
 }

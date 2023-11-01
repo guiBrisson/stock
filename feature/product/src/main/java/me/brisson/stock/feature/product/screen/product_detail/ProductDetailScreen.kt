@@ -1,5 +1,6 @@
 package me.brisson.stock.feature.product.screen.product_detail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.brisson.stock.core.design_system.components.EmptyStockTag
 import me.brisson.stock.core.design_system.theme.StockTheme
 import me.brisson.stock.core.model.Product
 import me.brisson.stock.core.model.StockItem
@@ -114,25 +116,35 @@ internal fun ProductDetailScreen(
                 when (productDetailUiState) {
                     is ProductDetailUiState.Success -> {
                         item {
-                            Row(
+                            Column(
                                 modifier = Modifier.padding(horizontal = 20.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
                             ) {
-                                productDetailUiState.product.observation?.let {
-                                    Icon(
-                                        imageVector = Icons.Default.Info,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
-                                    )
+                                AnimatedVisibility(visible = productDetailUiState.product.total == 0) {
+                                    EmptyStockTag()
                                 }
 
-                                Text(
-                                    text = productDetailUiState.product.name,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+
+                                    if (!productDetailUiState.product.observation.isNullOrEmpty()) {
+                                        Icon(
+                                            imageVector = Icons.Default.Info,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
+                                        )
+                                    }
+
+
+                                    Text(
+                                        text = productDetailUiState.product.name,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                }
                             }
                         }
 
@@ -167,6 +179,7 @@ internal fun ProductDetailScreen(
                                     .background(MaterialTheme.colorScheme.background)
                                     .padding(start = 20.dp, end = 20.dp, top = 12.dp),
                                 tab = selectedTab,
+                                uiState = productDetailUiState,
                             )
                         }
 

@@ -2,10 +2,10 @@ package me.brisson.stock.feature.product.screen.new_product
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,12 +20,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -71,143 +73,175 @@ internal fun NewProductScreen(
     onBack: () -> Unit,
     onNewProduct: (Product) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
+
     var showMeasurementUnitDropdown by remember { mutableStateOf(false) }
     var showExpiringDropdown by remember { mutableStateOf(false) }
 
     var name by rememberSaveable { mutableStateOf("") }
     var measurementUnit by rememberSaveable { mutableStateOf(MeasurementUnit.UNKNOWN) }
-    var expiringDays by rememberSaveable { mutableStateOf(0) }
+    var expiringDays by rememberSaveable { mutableIntStateOf(0) }
     var expiringLabel by rememberSaveable { mutableStateOf("") }
     var observation by rememberSaveable { mutableStateOf("") }
 
     val isButtonEnabled: Boolean =
         (name.isNotEmpty() && measurementUnit != MeasurementUnit.UNKNOWN && !newProductUiState.isLoading())
 
-
-
-
     Column(modifier = modifier) {
         IconButton(modifier = Modifier.padding(horizontal = 4.dp), onClick = onBack) {
             Icon(Icons.Default.ArrowBack, contentDescription = null)
         }
 
-        Text(
-            modifier = Modifier.padding(start = 20.dp, top = 12.dp),
-            text = "Novo produto",
-            style = MaterialTheme.typography.titleLarge,
-        )
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            item {
+                Text(
+                    modifier = Modifier.padding(start = 20.dp, top = 12.dp),
+                    text = "Novo produto",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
 
-        Text(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-            text = "Por favor, preencha o formulário para cadastrar um novo produto.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-        )
+            item {
+                Text(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                    text = "Por favor, preencha o formulário para cadastrar um novo produto.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                )
+            }
 
-        Text(
-            modifier = Modifier.padding(horizontal = 20.dp),
-            text = "Campos com * são obrigatórios",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-        )
+            item {
+                Text(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    text = "Campos com * são obrigatórios",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                )
+            }
 
-        Text(
-            modifier = Modifier.padding(start = 20.dp, top = 32.dp, bottom = 8.dp),
-            text = "Name*",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-        )
+            item {
+                Text(
+                    modifier = Modifier.padding(start = 20.dp, top = 32.dp, bottom = 8.dp),
+                    text = "Name*",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                )
+            }
 
-        TextInput(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            value = name,
-            onValueChange = { name = it },
-            hintText = "Arroz branco"
-        )
+            item {
+                TextInput(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    value = name,
+                    onValueChange = { name = it },
+                    hintText = "Arroz branco"
+                )
+            }
 
-        Text(
-            modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 8.dp),
-            text = "Unidade de medida*",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-        )
+            item {
+                Text(
+                    modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 8.dp),
+                    text = "Unidade de medida*",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                )
+            }
 
-        Column {
-            TextInput(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                value = measurementUnit.sampleName(),
-                onValueChange = { },
-                hintText = "Peso (Kg)",
-                enabled = false,
-                trayContent = {
-                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
-                },
-                onClick = { showMeasurementUnitDropdown = true },
-            )
+            item {
+                Column {
+                    TextInput(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        value = measurementUnit.sampleName(),
+                        onValueChange = { },
+                        hintText = "Peso (Kg)",
+                        enabled = false,
+                        trayContent = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null
+                            )
+                        },
+                        onClick = {
+                            showMeasurementUnitDropdown = true
+                            focusManager.clearFocus()
+                        },
+                    )
 
-            UnitMeasurementDropdown(
-                expanded = showMeasurementUnitDropdown,
-                onSelect = { measurementUnit = it },
-                onDismissRequest = { showMeasurementUnitDropdown = false },
-                offset = IntOffset(y = 130, x = 0)
-            )
+                    UnitMeasurementDropdown(
+                        expanded = showMeasurementUnitDropdown,
+                        onSelect = { measurementUnit = it },
+                        onDismissRequest = { showMeasurementUnitDropdown = false },
+                        offset = IntOffset(y = 130, x = 0)
+                    )
+                }
+            }
+
+            item {
+                Text(
+                    modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 8.dp),
+                    text = "Notificação de vencimento",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                )
+            }
+
+            item {
+                Column {
+                    TextInput(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        value = expiringLabel,
+                        onValueChange = { },
+                        hintText = "3 meses",
+                        enabled = false,
+                        trayContent = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null
+                            )
+                        },
+                        onClick = {
+                            showExpiringDropdown = true
+                            focusManager.clearFocus()
+                        },
+                    )
+
+                    ExpiringDateDropdown(
+                        expanded = showExpiringDropdown,
+                        onSelect = { days, label ->
+                            expiringDays = days
+                            expiringLabel = label
+                        },
+                        onDismissRequest = { showExpiringDropdown = false },
+                        offset = IntOffset(y = 130, x = 0)
+                    )
+                }
+            }
+
+            item {
+                Text(
+                    modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 8.dp),
+                    text = "Observação",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                )
+            }
+
+            item {
+                TextInput(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    value = observation,
+                    onValueChange = { observation = it },
+                    hintText = "ex. Guardar o arroz branco em garráfas pet seladas sem oxigênio."
+                )
+            }
         }
-
-        Text(
-            modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 8.dp),
-            text = "Notificação de vencimento",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-        )
-
-        Column {
-            TextInput(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                value = expiringLabel,
-                onValueChange = { },
-                hintText = "3 meses",
-                enabled = false,
-                trayContent = {
-                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
-                },
-                onClick = { showExpiringDropdown = true },
-            )
-
-            ExpiringDateDropdown(
-                expanded = showExpiringDropdown,
-                onSelect = { days, label ->
-                    expiringDays = days
-                    expiringLabel = label
-                },
-                onDismissRequest = { showExpiringDropdown = false },
-                offset = IntOffset(y = 130, x = 0)
-            )
-        }
-
-        Text(
-            modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 8.dp),
-            text = "Observação",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-        )
-
-        TextInput(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            value = observation,
-            onValueChange = { observation = it },
-            hintText = "ex. Guardar o arroz branco em garráfas pet seladas sem oxigênio."
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
         Button(
             modifier = Modifier
                 .fillMaxWidth()
@@ -228,6 +262,7 @@ internal fun NewProductScreen(
             Text(text = "Concluir", style = MaterialTheme.typography.titleSmall)
         }
     }
+
 }
 
 @Composable

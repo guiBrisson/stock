@@ -405,7 +405,7 @@ fun StockMovementBottomSheetContent(
                     isEntry = false,
                     isLoss = isLoss,
                     date = Date(),
-                    quantity = quantity,
+                    quantity = -quantity,
                 )
                 val currentQuantity = stockItem.quantity
                 val newQuantity = currentQuantity - quantity

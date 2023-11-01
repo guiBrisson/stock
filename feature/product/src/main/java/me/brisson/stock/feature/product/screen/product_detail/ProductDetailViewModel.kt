@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    productRepository: ProductRepository,
+    private val productRepository: ProductRepository,
     private val stockItemRepository: StockItemRepository,
     private val movementRepository: StockMovementRepository,
 ) : ViewModel() {
@@ -74,6 +74,16 @@ class ProductDetailViewModel @Inject constructor(
     private fun newStockMovement(movement: StockMovement) {
         viewModelScope.launch(Dispatchers.IO) {
             movementRepository.add(stockMovement = movement)
+            updateProductQuantity(movement.quantity)
+        }
+    }
+
+    private fun updateProductQuantity(addedQuantity: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            product.value?.let { currentProduct ->
+                val newQuantity = currentProduct.total + addedQuantity
+                productRepository.add(currentProduct.copy(total = newQuantity))
+            }
         }
     }
 }
