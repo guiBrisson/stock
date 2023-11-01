@@ -18,6 +18,7 @@ fun List<StockMovementEntity>.asModel() = this.map { it.asModel() }
 
 fun StockMovementEntity.asModel() = StockMovement(
     id = id,
+    productId = productId,
     itemBatch =  stockItemBatch,
     isEntry = isEntry,
     isLoss = isLoss,

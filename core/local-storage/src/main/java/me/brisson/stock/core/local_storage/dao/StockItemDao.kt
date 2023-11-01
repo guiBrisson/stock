@@ -16,6 +16,9 @@ interface StockItemDao {
     @Query("SELECT * FROM stock_item WHERE id = :stockItemId")
     fun loadStockItemById(stockItemId: Int): Flow<StockItemEntity>
 
+    @Query("SELECT * FROM stock_item WHERE batch = :batch AND product_id = :productId")
+    fun loadStockItemByBatch(productId: Int, batch: String): StockItemEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(vararg stockItem: StockItemEntity): List<Long>
 

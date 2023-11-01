@@ -25,7 +25,6 @@ import me.brisson.stock.core.design_system.theme.red700
 import me.brisson.stock.core.model.MeasurementUnit
 import me.brisson.stock.core.model.StockMovement
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -65,6 +64,7 @@ fun ProductMovementItem(
             overflow = TextOverflow.Ellipsis,
         )
 
+        //Todo: format date "time ago"
         Text(modifier = Modifier.weight(1f), text = formattedDate, textAlign = TextAlign.Center)
 
         //Todo: add expiration date
@@ -83,13 +83,7 @@ fun ProductMovementItem(
 private fun PreviewProductMovementItem() {
     StockTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
-            val movement = StockMovement(
-                itemBatch = "123123123123",
-                isEntry = false,
-                isLoss = false,
-                date = Date(),
-                quantity = 12,
-            )
+            val movement = StockMovement.mockForPreview()
 
             ProductMovementItem(
                 modifier = Modifier.fillMaxWidth(),

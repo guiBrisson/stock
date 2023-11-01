@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val productRepository: ProductRepository,
+    productRepository: ProductRepository,
     private val stockItemRepository: StockItemRepository,
     private val movementRepository: StockMovementRepository,
 ) : ViewModel() {
@@ -39,36 +39,41 @@ class ProductDetailViewModel @Inject constructor(
         movementRepository.loadFromProductId(productId)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), initialValue = emptyList())
 
-    val uiState: StateFlow<ProductDetailUiState> =
-        combine(product, stockItems, movementItems) { product, stockItems, stockMovements ->
+    val uiState: StateFlow<ProductDetailUiState> = updateUiState()
+
+    private fun updateUiState(): StateFlow<ProductDetailUiState> {
+        return combine(product, stockItems, movementItems) { product, stockItems, stockMovements ->
             if (product == null) {
                 return@combine ProductDetailUiState.Error(Throwable("Product not found"))
             }
 
             ProductDetailUiState.Success(product, stockItems, stockMovements)
-        }
-            .catch {
-                ProductDetailUiState.Error(Throwable(it))
-            }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                ProductDetailUiState.Loading
-            )
+        }.catch {
+            ProductDetailUiState.Error(Throwable(it))
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            ProductDetailUiState.Loading
+        )
+    }
 
-    fun newStockItem(item: StockItem) {
+    fun newStockItem(item: StockItem, movement: StockMovement) {
         viewModelScope.launch(Dispatchers.IO) {
             stockItemRepository.add(item)
+            newStockMovement(movement)
+        }
+    }
 
-            val movement = StockMovement(
-                itemBatch = item.batch,
-                isEntry = true,
-                isLoss = false,
-                date = item.entryDate,
-                quantity = item.quantity,
-            )
+    fun writeStockItemOff(updatedStockItem: StockItem, movement: StockMovement) {
+        viewModelScope.launch(Dispatchers.IO) {
+            stockItemRepository.edit(updatedStockItem)
+            newStockMovement(movement)
+        }
+    }
 
-            movementRepository.add(productId = item.productId, stockMovement = movement)
+    private fun newStockMovement(movement: StockMovement) {
+        viewModelScope.launch(Dispatchers.IO) {
+            movementRepository.add(stockMovement = movement)
         }
     }
 }

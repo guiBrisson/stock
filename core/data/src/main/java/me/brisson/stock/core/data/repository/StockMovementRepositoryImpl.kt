@@ -15,8 +15,8 @@ class StockMovementRepositoryImpl @Inject constructor(
         return movementDao.loadStockMovementFromProductId(productId).map { it.asModel() }
     }
 
-    override suspend fun add(productId: Int, stockMovement: StockMovement) {
-        movementDao.insertAll(stockMovement.asEntity(productId))
+    override suspend fun add(stockMovement: StockMovement) {
+        movementDao.insertAll(stockMovement.asEntity(stockMovement.productId))
     }
 
     override suspend fun delete(stockMovement: StockMovement): Boolean {

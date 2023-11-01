@@ -27,12 +27,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import me.brisson.stock.core.design_system.theme.neutral200
 import me.brisson.stock.core.design_system.theme.neutral600
 
+
+//Todo: make clear for the user when the component is not enabled
 @Composable
 fun TextInput(
     modifier: Modifier = Modifier,
@@ -72,6 +75,7 @@ fun TextInput(
         visualTransformation = visualTransformation,
         textStyle = textStyle,
         interactionSource = interactionSource,
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
         decorationBox = { innerTextField ->
             val strokeColor: Color = if (isSystemInDarkTheme()) neutral600 else neutral200
             val borderColor by animateColorAsState(

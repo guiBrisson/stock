@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
-val HEADER_INDEX_SIZE = 30.dp
+val HEADER_INDEX_SIZE = 24.dp
 
 @Composable
 fun ProductStockHeader(modifier: Modifier = Modifier, tab: ProductDetailTab) {
@@ -50,5 +50,9 @@ fun ProductStockHeader(modifier: Modifier = Modifier, tab: ProductDetailTab) {
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             textAlign = TextAlign.Center
         )
+
+        if (tab == ProductDetailTab.STOCK) {
+            Box(modifier = Modifier.defaultMinSize(minWidth = HEADER_INDEX_SIZE))
+        }
     }
 }

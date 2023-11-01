@@ -59,7 +59,7 @@ fun NewEntryBottomSheet(
     productId: Int,
     measurementUnit: MeasurementUnit,
     onDismissRequest: () -> Unit,
-    onConclude: (StockItem) -> Unit,
+    onConclude: (newStockItem: StockItem, movement: StockMovement) -> Unit,
 ) {
 
     BottomSheet(
@@ -73,7 +73,10 @@ fun NewEntryBottomSheet(
                 .padding(bottom = 20.dp),
             productId = productId,
             measurementUnit = measurementUnit,
-            onConclude = onConclude,
+            onConclude = { newStockItem, movement ->
+                onConclude(newStockItem, movement)
+                onDismissRequest()
+            },
         )
     }
 }
@@ -86,7 +89,7 @@ fun WriteOffBottomSheet(
     stockItem: StockItem,
     measurementUnit: MeasurementUnit,
     onDismissRequest: () -> Unit,
-    onConclude: (StockMovement) -> Unit,
+    onConclude: (updatedStockItem: StockItem, movement: StockMovement) -> Unit,
 ) {
     BottomSheet(
         modifier = modifier,
@@ -99,17 +102,25 @@ fun WriteOffBottomSheet(
                 .padding(bottom = 20.dp),
             stockItem = stockItem,
             measurementUnit = measurementUnit,
-            onConclude = onConclude,
+            onConclude = { newStockItem, movement ->
+                onConclude(newStockItem, movement)
+                onDismissRequest()
+            },
         )
     }
 }
+
+/* Todo fix: the numeric keyboard has some special characters (like ',' '.')
+             and since it's trying to parse it to int, the app crashes */
+
+// Todo: Make masks for the price and date text fields
 
 @Composable
 private fun StockItemBottomSheetContent(
     modifier: Modifier = Modifier,
     productId: Int,
     measurementUnit: MeasurementUnit,
-    onConclude: (StockItem) -> Unit,
+    onConclude: (newStockItem: StockItem, movement: StockMovement) -> Unit,
 ) {
     var quantity by remember { mutableIntStateOf(0) }
     var batch by remember { mutableStateOf("") }
@@ -120,7 +131,7 @@ private fun StockItemBottomSheetContent(
         buttonEnabled = (quantity > 0 && batch.isNotEmpty())
     }
 
-    Column(modifier = modifier.padding(20.dp)) {
+    Column(modifier = modifier.padding(horizontal = 20.dp)) {
         Row(
             modifier = Modifier.height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -264,7 +275,7 @@ private fun StockItemBottomSheetContent(
         Button(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp),
+                .padding(vertical = 20.dp),
             enabled = buttonEnabled,
             onClick = {
                 //Todo: use the right dates
@@ -273,11 +284,20 @@ private fun StockItemBottomSheetContent(
                     productId = productId,
                     entryDate = Date(),
                     expirationDate = Date(),
-                    price = price,
+                    price = if (price > 0) price else null,
                     quantity = quantity,
                 )
 
-                onConclude(item)
+                val movement = StockMovement(
+                    productId = productId,
+                    itemBatch = batch,
+                    isEntry = true,
+                    isLoss = false,
+                    date = Date(),
+                    quantity = quantity,
+                )
+
+                onConclude(item, movement)
             },
             shape = RoundedCornerShape(4.dp),
         ) {
@@ -291,12 +311,12 @@ fun StockMovementBottomSheetContent(
     modifier: Modifier = Modifier,
     stockItem: StockItem,
     measurementUnit: MeasurementUnit,
-    onConclude: (StockMovement) -> Unit,
+    onConclude: (updatedStockItem: StockItem, movement: StockMovement) -> Unit,
 ) {
     var quantity by remember { mutableIntStateOf(0) }
     var isLoss by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier.padding(20.dp)) {
+    Column(modifier = modifier.padding(horizontal = 20.dp)) {
         Row(
             modifier = Modifier.height(IntrinsicSize.Max),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -345,7 +365,7 @@ fun StockMovementBottomSheetContent(
             hintText = "0",
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next,
+                imeAction = ImeAction.Done,
             ),
             trayContent = {
                 Text(measurementUnit.abbreviation)
@@ -353,7 +373,9 @@ fun StockMovementBottomSheetContent(
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -367,22 +389,28 @@ fun StockMovementBottomSheetContent(
             Checkbox(
                 modifier = Modifier.offset(x = 12.dp),
                 checked = isLoss,
-                onCheckedChange = { isLoss = it })
+                onCheckedChange = { isLoss = it },
+            )
         }
 
         Button(
-            modifier = Modifier.fillMaxWidth(),
-            enabled = (quantity > 0),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp),
+            enabled = (quantity > 0 && quantity <= stockItem.quantity),
             onClick = {
                 val movement = StockMovement(
                     itemBatch = stockItem.batch,
+                    productId = stockItem.productId,
                     isEntry = false,
                     isLoss = isLoss,
                     date = Date(),
                     quantity = quantity,
                 )
+                val currentQuantity = stockItem.quantity
+                val newQuantity = currentQuantity - quantity
 
-                onConclude(movement)
+                onConclude(stockItem.copy(quantity = newQuantity), movement)
             },
             shape = RoundedCornerShape(4.dp),
         ) {
@@ -401,7 +429,7 @@ private fun PreviewStockItemBottomSheetContent() {
                 modifier = Modifier.fillMaxWidth(),
                 productId = 0,
                 measurementUnit = MeasurementUnit.MASS,
-                onConclude = { },
+                onConclude = { _, _ -> },
             )
         }
     }
@@ -416,7 +444,7 @@ private fun PreviewStockMovementBottomSheetContent() {
                 modifier = Modifier.fillMaxWidth(),
                 stockItem = StockItem.mockForPreview(),
                 measurementUnit = MeasurementUnit.MASS,
-                onConclude = { },
+                onConclude = { _, _ -> },
             )
         }
     }

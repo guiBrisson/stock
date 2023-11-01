@@ -38,7 +38,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.brisson.stock.core.design_system.theme.StockTheme
 import me.brisson.stock.core.model.Product
 import me.brisson.stock.core.model.StockItem
-import me.brisson.stock.feature.product.screen.product_detail.components.MovementsButtons
+import me.brisson.stock.core.model.StockMovement
+import me.brisson.stock.feature.product.screen.product_detail.components.EntryButton
 import me.brisson.stock.feature.product.screen.product_detail.components.NewEntryBottomSheet
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTab
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductDetailTopBar
@@ -47,6 +48,7 @@ import me.brisson.stock.feature.product.screen.product_detail.components.Product
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockHeader
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductStockItem
 import me.brisson.stock.feature.product.screen.product_detail.components.ProductTabs
+import me.brisson.stock.feature.product.screen.product_detail.components.WriteOffBottomSheet
 import me.brisson.stock.feature.product.util.makeList
 
 @Composable
@@ -61,6 +63,7 @@ fun ProductDetailRoute(
         modifier = modifier.fillMaxSize(),
         productDetailUiState = productDetailUiState,
         onNewEntry = viewModel::newStockItem,
+        onWriteOff = viewModel::writeStockItemOff,
         onBack = onBack,
     )
 }
@@ -70,12 +73,14 @@ fun ProductDetailRoute(
 internal fun ProductDetailScreen(
     modifier: Modifier = Modifier,
     productDetailUiState: ProductDetailUiState,
-    onNewEntry: (StockItem) -> Unit,
+    onNewEntry: (newStockItem: StockItem, movement: StockMovement) -> Unit,
+    onWriteOff: (updatedStockItem: StockItem, movement: StockMovement) -> Unit,
     onBack: () -> Unit,
 ) {
     val scrollState = rememberLazyListState()
 
     var selectedTab: ProductDetailTab by rememberSaveable { mutableStateOf(ProductDetailTab.STOCK) }
+    var selectedStockItem: StockItem? by remember { mutableStateOf(null) }
 
     val titleVisible by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 } }
     var showNewEntryBottomSheet by remember { mutableStateOf(false) }
@@ -171,10 +176,15 @@ internal fun ProductDetailScreen(
                                     ProductStockItem(
                                         modifier = Modifier
                                             .fillMaxWidth()
+                                            .animateItemPlacement()
                                             .padding(horizontal = 20.dp, vertical = 10.dp),
                                         index = i + 1,
                                         item = stockItem,
                                         measurementUnit = productDetailUiState.product.measurementUnit,
+                                        onWriteOff = {
+                                            selectedStockItem = stockItem
+                                            showWriteOffBottomSheet = true
+                                        },
                                     )
                                 }
                             }
@@ -184,6 +194,7 @@ internal fun ProductDetailScreen(
                                     ProductMovementItem(
                                         modifier = Modifier
                                             .fillMaxWidth()
+                                            .animateItemPlacement()
                                             .padding(horizontal = 20.dp, vertical = 10.dp),
                                         item = movement,
                                         measurementUnit = productDetailUiState.product.measurementUnit,
@@ -212,15 +223,27 @@ internal fun ProductDetailScreen(
                         productId = productDetailUiState.product.id,
                         measurementUnit = productDetailUiState.product.measurementUnit,
                         onDismissRequest = { showNewEntryBottomSheet = false },
-                        onConclude = { onNewEntry(it); showNewEntryBottomSheet = false },
+                        onConclude = onNewEntry,
                     )
 
-                    MovementsButtons(
+                    selectedStockItem?.let {
+                        WriteOffBottomSheet(
+                            show = showWriteOffBottomSheet,
+                            stockItem = it,
+                            measurementUnit = productDetailUiState.product.measurementUnit,
+                            onDismissRequest = {
+                                showWriteOffBottomSheet = false
+                                selectedStockItem = null
+                            },
+                            onConclude = onWriteOff,
+                        )
+                    }
+
+                    EntryButton(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.background)
                             .padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
-                        onWriteOff = { showWriteOffBottomSheet = true },
                         onNewEntry = { showNewEntryBottomSheet = true }
                     )
                 }
@@ -246,8 +269,9 @@ private fun PreviewProductDetailScreen() {
             ProductDetailScreen(
                 modifier = Modifier.fillMaxSize(),
                 productDetailUiState = uiState,
-                onNewEntry = { },
                 onBack = { },
+                onNewEntry = { _, _ -> },
+                onWriteOff = { _, _ -> },
             )
         }
     }
