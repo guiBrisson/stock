@@ -49,7 +49,10 @@ import me.brisson.stock.core.design_system.theme.red700
 import me.brisson.stock.core.model.MeasurementUnit
 import me.brisson.stock.core.model.StockItem
 import me.brisson.stock.core.model.StockMovement
+import me.brisson.stock.feature.product.util.DateVisualTransformation
+import me.brisson.stock.feature.product.util.isInteger
 import java.util.Date
+import java.util.GregorianCalendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,10 +113,12 @@ fun WriteOffBottomSheet(
     }
 }
 
-/* Todo fix: the numeric keyboard has some special characters (like ',' '.')
-             and since it's trying to parse it to int, the app crashes */
+/*
+    Todo fix: the numeric keyboard has some special characters (like ',' '.')
+             and since it's trying to parse it to int, the app crashes
 
-// Todo: Make masks for the price and date text fields
+    Todo: change quantity type from Int to Float
+*/
 
 @Composable
 private fun StockItemBottomSheetContent(
@@ -126,9 +131,12 @@ private fun StockItemBottomSheetContent(
     var batch by remember { mutableStateOf("") }
     var price by remember { mutableFloatStateOf(0f) }
     var buttonEnabled by remember { mutableStateOf(false) }
+    var entryDate by remember { mutableStateOf("") }
+    var expirationDate by remember { mutableStateOf("") }
 
-    LaunchedEffect(quantity, batch) {
-        buttonEnabled = (quantity > 0 && batch.isNotEmpty())
+    LaunchedEffect(quantity, batch, entryDate, expirationDate) {
+        buttonEnabled = quantity > 0 && batch.isNotEmpty() &&
+                entryDate.length == 6 && expirationDate.length == 6
     }
 
     Column(modifier = modifier.padding(horizontal = 20.dp)) {
@@ -202,9 +210,10 @@ private fun StockItemBottomSheetContent(
 
                 TextInput(
                     modifier = Modifier.fillMaxWidth(),
-                    value = "",
-                    onValueChange = { },
+                    value = entryDate,
+                    onValueChange = { if (it.length <= 6 && it.isInteger()) entryDate = it },
                     hintText = "00/0000",
+                    visualTransformation = DateVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Number,
@@ -232,9 +241,10 @@ private fun StockItemBottomSheetContent(
 
                 TextInput(
                     modifier = Modifier.fillMaxWidth(),
-                    value = "",
-                    onValueChange = { },
+                    value = expirationDate,
+                    onValueChange = { if (it.length <= 6 && it.isInteger()) expirationDate = it },
                     hintText = "00/0000",
+                    visualTransformation = DateVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Number,
@@ -278,32 +288,52 @@ private fun StockItemBottomSheetContent(
                 .padding(vertical = 20.dp),
             enabled = buttonEnabled,
             onClick = {
-                //Todo: use the right dates
-                val item = StockItem(
-                    batch = batch,
-                    productId = productId,
-                    entryDate = Date(),
-                    expirationDate = Date(),
-                    price = if (price > 0) price else null,
-                    quantity = quantity,
-                )
-
-                val movement = StockMovement(
-                    productId = productId,
-                    itemBatch = batch,
-                    isEntry = true,
-                    isLoss = false,
-                    date = Date(),
-                    quantity = quantity,
-                )
-
-                onConclude(item, movement)
+                newEntry(entryDate, expirationDate, batch, productId, price, quantity, onConclude)
             },
             shape = RoundedCornerShape(4.dp),
         ) {
             Text(text = "Concluir", style = MaterialTheme.typography.titleSmall)
         }
     }
+}
+
+private fun newEntry(
+    entryDate: String,
+    expirationDate: String,
+    batch: String,
+    productId: Int,
+    price: Float,
+    quantity: Int,
+    onConclude: (newStockItem: StockItem, movement: StockMovement) -> Unit
+) {
+    val entryMonth = entryDate.substring(0..1).toInt()
+    val entryYear = entryDate.substring(2..5).toInt()
+    val entryCalendar = GregorianCalendar(entryYear, entryMonth - 1, 1)
+
+    val expirationMonth = expirationDate.substring(0..1).toInt()
+    val expirationYear = expirationDate.substring(2..5).toInt()
+    val expirationCalendar =
+        GregorianCalendar(expirationYear, expirationMonth - 1, 1)
+
+    val item = StockItem(
+        batch = batch,
+        productId = productId,
+        entryDate = entryCalendar.time,
+        expirationDate = expirationCalendar.time,
+        price = if (price > 0) price else null,
+        quantity = quantity,
+    )
+
+    val movement = StockMovement(
+        productId = productId,
+        itemBatch = batch,
+        isEntry = true,
+        isLoss = false,
+        date = Date(),
+        quantity = quantity,
+    )
+
+    onConclude(item, movement)
 }
 
 @Composable

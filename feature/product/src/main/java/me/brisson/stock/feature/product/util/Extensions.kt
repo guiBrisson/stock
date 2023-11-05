@@ -9,3 +9,7 @@ fun <T>makeList(model: T, size: Int): List<T> {
 
     return mutableList
 }
+
+fun String.isInteger(): Boolean {
+    return this.toIntOrNull() != null
+}
