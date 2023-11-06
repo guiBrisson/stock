@@ -9,6 +9,7 @@ data class StockMovement(
     val isEntry: Boolean,
     val isLoss: Boolean,
     val date: Date,
+    val expirationDate: Date,
     val quantity: Int,
 ) {
     constructor(
@@ -17,8 +18,9 @@ data class StockMovement(
         isEntry: Boolean,
         isLoss: Boolean,
         date: Date,
+        expirationDate: Date,
         quantity: Int,
-    ): this(0, productId, itemBatch, isEntry, isLoss, date, quantity)
+    ): this(0, productId, itemBatch, isEntry, isLoss, date, expirationDate, quantity)
 
     companion object {
         fun mockForPreview(isEntry: Boolean = true) = StockMovement(
@@ -27,6 +29,7 @@ data class StockMovement(
             isEntry = isEntry,
             isLoss = false,
             date = Date(),
+            expirationDate = Date(),
             quantity = 12,
         )
     }

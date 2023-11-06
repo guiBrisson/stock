@@ -13,5 +13,6 @@ data class StockMovementEntity(
     @ColumnInfo(name = "is_entry") val isEntry: Boolean,
     @ColumnInfo(name = "is_loss") val isLoss: Boolean,
     val date: Date,
+    @ColumnInfo(name = "expiration_date") val expirationDate: Date,
     val quantity: Int,
 )

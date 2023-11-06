@@ -51,8 +51,10 @@ import me.brisson.stock.core.model.StockItem
 import me.brisson.stock.core.model.StockMovement
 import me.brisson.stock.feature.product.util.DateVisualTransformation
 import me.brisson.stock.feature.product.util.isInteger
+import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.GregorianCalendar
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,7 +133,12 @@ private fun StockItemBottomSheetContent(
     var batch by remember { mutableStateOf("") }
     var price by remember { mutableFloatStateOf(0f) }
     var buttonEnabled by remember { mutableStateOf(false) }
-    var entryDate by remember { mutableStateOf("") }
+
+    val locale = Locale.getDefault()
+    val dateFormat = SimpleDateFormat("MM yyyy", locale)
+    val formattedDate = dateFormat.format(Date()).replace(" ", "")
+
+    var entryDate by remember { mutableStateOf(formattedDate) }
     var expirationDate by remember { mutableStateOf("") }
 
     LaunchedEffect(quantity, batch, entryDate, expirationDate) {
@@ -211,7 +218,9 @@ private fun StockItemBottomSheetContent(
                 TextInput(
                     modifier = Modifier.fillMaxWidth(),
                     value = entryDate,
-                    onValueChange = { if (it.length <= 6 && it.isInteger()) entryDate = it },
+                    onValueChange = {
+                        if (it.length <= 6 && (it.isInteger() || it.isEmpty())) entryDate = it
+                    },
                     hintText = "00/0000",
                     visualTransformation = DateVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
@@ -242,7 +251,9 @@ private fun StockItemBottomSheetContent(
                 TextInput(
                     modifier = Modifier.fillMaxWidth(),
                     value = expirationDate,
-                    onValueChange = { if (it.length <= 6 && it.isInteger()) expirationDate = it },
+                    onValueChange = {
+                        if (it.length <= 6 && (it.isInteger() || it.isEmpty())) expirationDate = it
+                    },
                     hintText = "00/0000",
                     visualTransformation = DateVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
@@ -329,7 +340,8 @@ private fun newEntry(
         itemBatch = batch,
         isEntry = true,
         isLoss = false,
-        date = Date(),
+        date = item.entryDate,
+        expirationDate = item.expirationDate,
         quantity = quantity,
     )
 
@@ -435,6 +447,7 @@ fun StockMovementBottomSheetContent(
                     isEntry = false,
                     isLoss = isLoss,
                     date = Date(),
+                    expirationDate = stockItem.expirationDate,
                     quantity = -quantity,
                 )
                 val currentQuantity = stockItem.quantity

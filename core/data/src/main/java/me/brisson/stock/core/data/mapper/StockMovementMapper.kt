@@ -11,6 +11,7 @@ fun StockMovement.asEntity(productId: Int) = StockMovementEntity(
     isEntry = isEntry,
     isLoss = isLoss,
     date = date,
+    expirationDate = expirationDate,
     quantity = quantity,
 )
 
@@ -23,5 +24,6 @@ fun StockMovementEntity.asModel() = StockMovement(
     isEntry = isEntry,
     isLoss = isLoss,
     date = date,
+    expirationDate = expirationDate,
     quantity = quantity,
 )

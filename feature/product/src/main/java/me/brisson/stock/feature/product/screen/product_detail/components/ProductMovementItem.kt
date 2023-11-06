@@ -36,6 +36,7 @@ fun ProductMovementItem(
     val locale = Locale.getDefault()
     val dateFormat = SimpleDateFormat("MM/yyyy", locale)
     val formattedDate = dateFormat.format(item.date)
+    val formattedExpirationDate = dateFormat.format(item.expirationDate)
 
     val icon = if (item.isEntry) {
         Icons.Default.KeyboardArrowUp
@@ -67,8 +68,7 @@ fun ProductMovementItem(
         //Todo: format date "time ago"
         Text(modifier = Modifier.weight(1f), text = formattedDate, textAlign = TextAlign.Center)
 
-        //Todo: add expiration date
-        Text(modifier = Modifier.weight(1f), text = formattedDate, textAlign = TextAlign.Center)
+        Text(modifier = Modifier.weight(1f), text = formattedExpirationDate, textAlign = TextAlign.Center)
 
         Text(
             modifier = Modifier.weight(1f),
