@@ -9,7 +9,6 @@ fun StockItem.asEntity() = StockItemEntity(
     productId = productId,
     expirationDate = expirationDate,
     entryDate = entryDate,
-    price = price,
     quantity = quantity,
 )
 
@@ -21,6 +20,5 @@ fun StockItemEntity.asModel() = StockItem(
     productId = productId,
     entryDate = entryDate,
     expirationDate = expirationDate,
-    price = price,
     quantity = quantity,
 )

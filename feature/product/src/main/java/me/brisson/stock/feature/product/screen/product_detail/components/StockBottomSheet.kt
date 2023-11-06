@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -131,7 +130,6 @@ private fun StockItemBottomSheetContent(
 ) {
     var quantity by remember { mutableIntStateOf(0) }
     var batch by remember { mutableStateOf("") }
-    var price by remember { mutableFloatStateOf(0f) }
     var buttonEnabled by remember { mutableStateOf(false) }
 
     val locale = Locale.getDefault()
@@ -272,34 +270,13 @@ private fun StockItemBottomSheetContent(
             }
         }
 
-        Text(
-            modifier = Modifier.padding(bottom = 8.dp, top = 20.dp),
-            text = "Preço",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-        )
-
-        TextInput(
-            modifier = Modifier.fillMaxWidth(),
-            value = if (price == 0f) "" else price.toString(),
-            onValueChange = { price = it.toFloat() },
-            hintText = "0,00",
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done,
-            ),
-            leadingContent = {
-                Text("R$")
-            }
-        )
-
         Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 20.dp),
             enabled = buttonEnabled,
             onClick = {
-                newEntry(entryDate, expirationDate, batch, productId, price, quantity, onConclude)
+                newEntry(entryDate, expirationDate, batch, productId, quantity, onConclude)
             },
             shape = RoundedCornerShape(4.dp),
         ) {
@@ -313,7 +290,6 @@ private fun newEntry(
     expirationDate: String,
     batch: String,
     productId: Int,
-    price: Float,
     quantity: Int,
     onConclude: (newStockItem: StockItem, movement: StockMovement) -> Unit
 ) {
@@ -331,7 +307,6 @@ private fun newEntry(
         productId = productId,
         entryDate = entryCalendar.time,
         expirationDate = expirationCalendar.time,
-        price = if (price > 0) price else null,
         quantity = quantity,
     )
 

@@ -89,7 +89,6 @@ private fun PreviewProductStockItem() {
                 productId = 1,
                 entryDate = Date(),
                 expirationDate = Date(),
-                price = 15f,
                 quantity = 12,
             )
 

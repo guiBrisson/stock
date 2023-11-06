@@ -13,6 +13,5 @@ data class StockItemEntity(
     @ColumnInfo(name = "product_id") val productId: Int,
     @ColumnInfo(name = "entry_date") val entryDate: Date,
     @ColumnInfo(name = "expiration_date") val expirationDate: Date,
-    val price: Float?,
     val quantity: Int,
 )

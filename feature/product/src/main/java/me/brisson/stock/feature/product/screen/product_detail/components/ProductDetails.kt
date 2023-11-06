@@ -10,9 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.brisson.stock.feature.product.screen.product_detail.ProductDetailUiState
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.util.Currency
 import java.util.Date
 import java.util.Locale
 
@@ -21,17 +19,6 @@ fun ProductDetails(
     modifier: Modifier = Modifier,
     productDetailUiState: ProductDetailUiState.Success,
 ) {
-    val itemsWithPrice = productDetailUiState.stockItems.filter { it.price != null }
-    val priceSum = itemsWithPrice.map { it.price!! }.sum()
-    val priceAverage = priceSum / itemsWithPrice.size
-
-    val numberFormat: NumberFormat = NumberFormat.getCurrencyInstance()
-    numberFormat.maximumFractionDigits = 2
-    numberFormat.currency = Currency.getInstance("BRL")
-
-    val formattedAveragePrice =
-        if (itemsWithPrice.isEmpty()) null else numberFormat.format(priceAverage)
-
     var closestDate: Date? = null
     productDetailUiState.stockItems.forEach { item ->
         if (closestDate == null) closestDate = item.expirationDate
@@ -57,12 +44,6 @@ fun ProductDetails(
             modifier = Modifier.weight(1f),
             title = "Próxima validade",
             value = formattedDate,
-        )
-
-        DetailItem(
-            modifier = Modifier.weight(1f),
-            title = "Preço médio",
-            value = formattedAveragePrice,
         )
 
         DetailItem(

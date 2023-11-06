@@ -8,7 +8,6 @@ data class StockItem(
     val productId: Int,
     val entryDate: Date,
     val expirationDate: Date,
-    val price: Float?,
     val quantity: Int,
 ) {
     constructor (
@@ -16,9 +15,8 @@ data class StockItem(
         productId: Int,
         entryDate: Date,
         expirationDate: Date,
-        price: Float?,
         quantity: Int,
-    ) : this(0, batch, productId, entryDate, expirationDate, price, quantity)
+    ) : this(0, batch, productId, entryDate, expirationDate, quantity)
 
     companion object {
         fun mockForPreview() = StockItem(
@@ -26,7 +24,6 @@ data class StockItem(
             productId = 1,
             entryDate = Date(),
             expirationDate = Date(),
-            price = 15f,
             quantity = 12,
         )
     }
